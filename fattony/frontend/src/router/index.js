@@ -2,6 +2,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import CreateRoom from '../views/CreateRoom.vue';
+import GodRoom from '../views/GodRoom.vue';
+import PlayerRoom from '../views/PlayerRoom.vue';
 
 Vue.use(VueRouter);
 
@@ -15,6 +17,16 @@ const routes = [
     path: '/createroom',
     name: 'CreateRoom',
     component: CreateRoom,
+  },
+  {
+    path: '/godroom',
+    name: 'GodRoom',
+    component: GodRoom,
+  },
+  {
+    path: '/playerroom',
+    name: 'PlayerRoom',
+    component: PlayerRoom,
   },
   {
     path: '/about',

@@ -86,6 +86,7 @@ export default {
         this.$http.post('/api/room/create', roomrequest)
             .then( resp => {
                 console.log(resp);
+                this.$router.push({ name: 'GodRoom', params: {id: resp.data.roomid}});
             })
             .catch( error => {
                 console.log(error);

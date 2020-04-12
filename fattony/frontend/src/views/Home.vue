@@ -45,8 +45,8 @@
 
     <section class="section">
     <div class="columns">
-    <div class="column"></div>
-    <div class="column is-three-quarters">
+    <div class="column is-5"></div>
+    <div class="column is-3">
     <section class="hero">
       <div class="hero-body">
         <div class="container">
@@ -54,13 +54,13 @@
             Fat Tony
           </h1>
           <h2 class="subtitle">
-            Social mafia game !
+            Social Mafia Game !
           </h2>
         </div>
       </div>
     </section>
     </div>
-    <div class="column"></div>
+    <div class="column is-4"></div>
     </div>
     </section>
 
@@ -71,23 +71,18 @@
         <div class="buttons">
             <b-button type="is-primary" @click="creatRoom" expanded>Create Room</b-button>
         </div>
-        </div>
-        <div class="column"></div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="columns">
-        <div class="column"></div>
-        <div class="column">
-        <b-field label="Room Id"
+        <b-field label="Or find a Room key and Join room"
             type="is-success"
             message="">
-            <b-input value="roomid" maxlength="300"></b-input>
+            <b-input :value="roomkey" maxlength="300"></b-input>
+        </b-field>
+        <b-field label="with a unique name"
+            type="is-success">
+            <b-input :value="playername" maxlength="300"></b-input>
         </b-field>
         <div class="buttons">
-            <b-button type="is-primary" expanded>Join Room</b-button>
-        </div>
+            <b-button type="is-primary" @click="joinRoom" expanded>Join Room</b-button>
+        </div>        
         </div>
         <div class="column"></div>
       </div>
@@ -103,6 +98,9 @@ export default {
   data() {
     return {
       error: null,
+      roomkey: 'key',
+      playername: 'player',
+      playerid: 0,
     };
   },
   methods: {
@@ -110,6 +108,10 @@ export default {
       console.log('creating room');
       this.$router.push({ name: 'CreateRoom' });
     },
+    joinRoom() {
+      console.log('creating room');
+      this.$router.push({ name: 'PlayerRoom', params: { id: 0} });
+    }
   },
 };
 </script>
