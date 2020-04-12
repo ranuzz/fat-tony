@@ -2,19 +2,71 @@ package com.deepwav.fattony.model.payload;
 
 public class RoomCreateResponse {
 
-    String roomId;
+    long roomid;
 
+    String roomkey;
 
+    String name;
 
-    public String getRoomId() {
-        return roomId;
-    }
+    String gametype;
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
-    }
+    int numplayers;
+
+    String rules;
 
     public RoomCreateResponse() {
     }
+
+
+
+    public String getRoomkey() {
+        return roomkey;
+    }
+
+    public void setRoomkey(String roomkey) {
+        this.roomkey = roomkey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getGametype() {
+        return gametype;
+    }
+
+    public void setGametype(String gametype) {
+        this.gametype = gametype;
+    }
+
+    public int getNumplayers() {
+        return numplayers;
+    }
+
+    public void setNumplayers(int numplayers) {
+        this.numplayers = numplayers;
+    }
+
+    public String getRules() {
+        return rules;
+    }
+
+    public void setRules(String rules) {
+        this.rules = rules;
+    }
+
+    public long getRoomid() {
+        return roomid;
+    }
+
+    public void setRoomid(long roomid) {
+        this.roomid = roomid;
+    }
+
+
 
 }
