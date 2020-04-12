@@ -34,6 +34,7 @@
         </template>
     </b-navbar>
     <hr />
+
     <section>
         <div class="columns">
             <div class="column is-2"></div>
@@ -53,7 +54,7 @@
                 role="button"
                 aria-controls="contentIdForA11y3">
                 <p class="card-header-title">
-                   Game Details
+                   Voting Arena
                 </p>
                 <a class="card-header-icon">
                     <b-icon
@@ -63,14 +64,20 @@
             </div>
             <div class="card-content">
                 <div class="content">
-                  <ul>
-                    <li>ID: {{room_id}}</li>
-                    <li>Name: {{room_name}}</li>
-                    <li>Key: {{room_key}}</li>
-                    <li>Players: {{room_player_count}}</li>
-                    <li>Type: {{room_game_type}}</li>
-                    <li>Rules: {{room_rules}}</li>
-                  </ul>
+                    <ul id="example-1">
+                        <li v-for="item in players" :key="item.playerid">
+                            {{ item.name }}
+                            <div v-if="item.name === player_name">
+                                <b-tag type="is-info">It's Me</b-tag>
+                            </div>
+                            <div v-if="item.dead">
+                                <b-tag type="is-info">Dead !</b-tag>
+                            </div>
+                            <div v-if="!item.dead && item.name !== player_name">
+                                <button class="button" @click="postVote(item);">Vote</button>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </b-collapse>
@@ -86,6 +93,38 @@
     <br />
     <br />
     <hr />
+        <section>
+        <div class="columns">
+            <div class="column is-1"></div>
+            <div class="column is-10">
+                    <b-taglist>
+        <b-tag type="is-info">Name:{{player_name}}</b-tag>
+        <b-tag type="is-info">Dead:{{player_dead}}</b-tag>
+        <b-tag type="is-info">Role:{{player_role}}</b-tag>
+        <b-tag type="is-info">EyeOpen:{{player_aankh}}</b-tag>
+        <b-tag type="is-info">Voted For:{{player_voted_for}}</b-tag>
+    </b-taglist>
+            </div>
+            <div class="column is-1"></div>
+        </div>
+
+    </section>
+    <section>
+        <div class="columns">
+            <div class="column is-1"></div>
+            <div class="column is-10">
+                        <b-taglist>
+            
+            <b-tag type="is-info">Key: {{room_key}}</b-tag>
+            <b-tag type="is-info">Max Players: {{room_player_count}}</b-tag>
+            <b-tag type="is-info">Game type: {{room_game_type}}</b-tag>
+            <b-tag type="is-info">Joined: {{players.length}}</b-tag>
+        </b-taglist>
+            </div>
+            <div class="column is-1"></div>
+        </div>
+
+    </section>
     <section>
       <div class="columns">
         <div class="column is-1"></div>
@@ -113,16 +152,6 @@
         <div class="column is-1"></div>
       </div>
     </section>
-
-    <section>
-        <ul id="example-1">
-            <li v-for="item in players" :key="item.playerid">
-                {{ item.name }}
-                <button class="button" @click="postVote(item);">Vote</button>
-            </li>
-        </ul>
-    </section>
-
  </div> 
 </template>
 
@@ -134,6 +163,11 @@ export default {
     data() {
         return {
             playerid: 0,
+            player_name: '',
+            player_role: '',
+            player_dead: false,
+            player_aankh: false,
+            player_voted_for: -1,
             room_id: -1,
             room_name: '',
             room_player_count: 0,
@@ -171,13 +205,14 @@ export default {
                 this.snackbar("Player died already : " + p.name);
             } else {
                 let prequest = {
-                    plpayerid: this.playerid,
+                    plpayerid: parseInt(this.playerid),
                     vote: p.playerid,
                 }
                 this.snackbar("Casting vote to player : " + p.name);
                 this.$http.patch("/api/player/update", prequest)
                     .then(resp => {
                         console.log(resp);
+                        this.getPlayerDetails(this.playerid);
                     })
                     .catch(error => {
                         console.log(error);
@@ -185,13 +220,15 @@ export default {
             }
         },
         getRoomPlayer() {
-            this.snackbar("Getting player list");
+            setTimeout(() => this.getRoomPlayer(), 1000);
+            if (this.room_id === -1) {
+                return;
+            }
             this.$http.get("/api/player/room/"+this.room_id)
                 .then(resp => {
                     this.players = resp.data;
-                    console.log(this.resp);
-                    console.log(this.players);
-                    this.snackbar("Current Joined players : "+ this.players.length);
+                    console.log(resp);
+                    //this.snackbar("Current Joined players : "+ this.players.length);
                 })
                 .catch(error => {
                     console.log(error);
@@ -203,6 +240,11 @@ export default {
             this.$http.get("/api/player/"+this.playerid)
                 .then(resp => {
                     console.log(resp);
+                    this.player_name = resp.data.name;
+                    this.player_role = resp.data.role;
+                    this.player_dead = resp.data.dead;
+                    this.player_aankh = resp.data.sight;
+                    this.player_voted_for = resp.data.vote;
                     this.getGameDetails(resp.data.roomid);
                 })
                 .catch(error => {
@@ -279,13 +321,14 @@ export default {
         },
     },
     mounted() {
-        console.log(this.$route.params);
-        this.playerid = this.$route.params['id'];
+        console.log(this.$route.query);
+        this.playerid = this.$route.query['id'];
         console.log('starting webcam');
         this.getPlayerDetails(this.playerid);
         this.startWebCam();
         this.loadfaceapi();
         this.onPlay(document.querySelector("#inputVideo"));
+        this.getRoomPlayer();
         
     }
 }

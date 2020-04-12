@@ -39,40 +39,42 @@
       <div class="columns">
         <div class="column is-1"></div>
         <div class="column is-8">
-                <div class="tile is-ancestor">
-              <div class="tile is-parent">
-                <article class="tile is-child box">
-                  <p class="title">One</p>
-                  <p class="subtitle">Stats</p>
-                </article>
-              </div>
-              <div class="tile is-parent">
-                <article class="tile is-child box">
-                  <p class="title">Two</p>
-                  <p class="subtitle">Stats</p>
-                </article>
-              </div>
-              <div class="tile is-parent">
-                <article class="tile is-child box">
-                  <p class="title">Three</p>
-                  <p class="subtitle">Stats</p>
-                </article>
-              </div>
-              <div class="tile is-parent">
-                <article class="tile is-child box">
-                  <p class="title">Four</p>
-                  <p class="subtitle">Stats</p>
-                </article>
-              </div>
-              <div class="tile is-parent">
-                <article class="tile is-child box">
-                  <p class="title">Five</p>
-                  <p class="subtitle">Stats</p>
-                </article>
-              </div>
+
+            <div class="tile is-ancestor">
+                  <div v-for="item in row_one" :key="item.id">
+                    <div class="tile is-parent">
+                      <article class="tile is-child box">
+                        <p v-if="players.length < item.id" class="title">Waiting for : {{item.id}}</p>
+                        <div v-if="players.length >= item.id">
+                          <p class="title">{{players[item.id-1].name}}</p><br />
+                          <b-tag type="is-info">Dead:{{players[item.id-1].dead}}</b-tag><br />
+                          <b-tag type="is-info">Role:{{players[item.id-1].role}}</b-tag><br />
+                          <b-tag type="is-info">Vote:{{players[item.id-1].vote}}</b-tag><br />
+                          <b-tag type="is-info">Eye:{{players[item.id-1].sight}}</b-tag><br />
+                        </div>
+                      </article>
+                    </div>
+                  </div>
             </div>
 
-                <div class="tile is-ancestor">
+            <div class="tile is-ancestor">
+                  <div v-for="item in row_two" :key="item.id">
+                    <div class="tile is-parent">
+                      <article class="tile is-child box">
+                        <p v-if="players.length < item.id" class="title">Waiting for : {{item.id}}</p>
+                        <div v-if="players.length >= item.id">
+                          <p class="title">{{players[item.id-1].name}}</p><br />
+                          <b-tag type="is-info">Dead:{{players[item.id-1].dead}}</b-tag><br />
+                          <b-tag type="is-info">Role:{{players[item.id-1].role}}</b-tag><br />
+                          <b-tag type="is-info">Vote:{{players[item.id-1].vote}}</b-tag><br />
+                          <b-tag type="is-info">Eye:{{players[item.id-1].sight}}</b-tag><br />
+                        </div>
+                      </article>
+                    </div>
+                  </div>
+            </div>
+            <!--
+            <div class="tile is-ancestor">
               <div class="tile is-parent">
                 <article class="tile is-child box">
                   <p class="title">Six</p>
@@ -97,14 +99,35 @@
                   <p class="subtitle">Stats</p>
                 </article>
               </div>
+            </div>
+
+            <div class="tile is-ancestor">
               <div class="tile is-parent">
                 <article class="tile is-child box">
-                  <p class="title">Ten</p>
+                  <p class="title">Six</p>
+                  <p class="subtitle">Stats</p>
+                </article>
+              </div>
+              <div class="tile is-parent">
+                <article class="tile is-child box">
+                  <p class="title">Seven</p>
+                  <p class="subtitle">Stats</p>
+                </article>
+              </div>
+              <div class="tile is-parent">
+                <article class="tile is-child box">
+                  <p class="title">Eight</p>
+                  <p class="subtitle">Stats</p>
+                </article>
+              </div>
+              <div class="tile is-parent">
+                <article class="tile is-child box">
+                  <p class="title">Nine</p>
                   <p class="subtitle">Stats</p>
                 </article>
               </div>
             </div>
-
+            -->
 
         </div>
         <div class="column is-2">
@@ -178,17 +201,45 @@ export default {
   name: 'GodRoom',
   data() {
     return {
-      roomid: 'unknown',
+      roomid: -1,
       room_name: '',
       room_player_count: 0,
       room_rules: '',
       room_game_type: '',
       room_key: '',
+      players: [],
+      row_one: [
+        {id: 1},
+        {id: 2},
+        {id: 3},
+        {id: 4},
+      ],
+      row_two: [
+        {id: 5},
+        {id: 6},
+        {id: 7},
+        {id: 8},
+      ]
     };
   },
   methods: {
     snackbar(msg) {
       this.$buefy.snackbar.open(msg);
+    },
+    getRoomPlayer() {
+        setTimeout(() => this.getRoomPlayer(), 1000);
+        if (this.room_id === -1) {
+            return;
+        }
+        this.$http.get("/api/player/room/"+this.roomid)
+            .then(resp => {
+                this.players = resp.data;
+                console.log(resp);
+                //this.snackbar("Current Joined players : "+ this.players.length);
+            })
+            .catch(error => {
+                console.log(error);
+            })
     },
     getRoomDetails(rid) {
         this.$http.get('/api/room/'+rid)
@@ -209,9 +260,10 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$route.params);
-    this.roomid = this.$route.params['id'];
+    console.log(this.$route.query);
+    this.roomid = this.$route.query['id'];
     this.getRoomDetails(this.roomid);
+    this.getRoomPlayer();
   }
 }
 </script>

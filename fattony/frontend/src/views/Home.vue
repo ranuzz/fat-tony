@@ -120,7 +120,7 @@ export default {
       this.$http.post("/api/player/create", request)
         .then(resp => {
           let pid = resp.data.playerid;
-          this.$router.push({ name: 'PlayerRoom', params: { id: pid} });
+          this.$router.push({ name: 'PlayerRoom', query: { id: pid} });
         })
         .catch(error => {
           console.log(error);

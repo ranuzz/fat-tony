@@ -23,15 +23,34 @@ public class PlayerService {
     @Autowired
     private RoomRepository roomRepository;
 
+    private static int MAX_PLAYERS = 8;
+    private static String[] PLAYER_ROLES = new String[]{ 
+        "Mafia",
+        "Villager",
+        "Mafia",
+        "Healer",
+        "Detective",
+        "Sucide Bomber",
+        "Villager",
+        "Villager",
+     };
+
     public PlayerResponse createPlayer(PlayerRequest request) {
         PlayerResponse response = new PlayerResponse();
         Optional<Room> room = roomRepository.findById(request.getRoomid());
         if (room.isPresent()) {
+            List<PlayerResponse> players = this.roomPlayers(request.getPlpayerid());
+            if (players.size() == PlayerService.MAX_PLAYERS) {
+                System.out.println("max player reached");
+                // TODO race condition check
+                response.setPlayerid(-1);
+                return response;
+            }
             Player player = new Player();
             player.setDead(false);
             player.setRoom(room.get());
             player.setPlayerName(request.getName());
-            player.setRole(request.getRole());
+            player.setRole(PlayerService.PLAYER_ROLES[players.size()]);
             player.setRoomKey(request.getRoomkey());
 
             Player created = playerRepository.save(player);
@@ -63,13 +82,19 @@ public class PlayerService {
 
         PlayerResponse response = new PlayerResponse();
         Optional<Player> op_player = playerRepository.findById(request.getPlpayerid());
+        System.out.println(request.getPlpayerid());
         if (op_player.isPresent()) {
+            System.out.println("found player");
+
             Player player = op_player.get();
-            player.setDead(request.isDead());
+            System.out.println(request.getVote());
+            //player.setDead(request.isDead());
             player.setVote(request.getVote());
-            player.setGesture(request.getGesture());
-            player.setSight(request.isSight());
+            //player.setGesture(request.getGesture());
+            //player.setSight(request.isSight());
             playerRepository.save(player);
+        } else {
+            System.out.println("found player no");
         }
         return response;
     }
@@ -81,8 +106,14 @@ public class PlayerService {
             List<Player> players = playerRepository.findByRoom(room);
             List<PlayerResponse> response = new ArrayList<>();
             for (Player p : players) {
+                PlayerResponse resp = new PlayerResponse();
+                resp.setDead(p.isDead());
+                resp.setSight(p.isSight());
+                resp.setPlayerid(p.getId());
+                resp.setName(p.getPlayerName());
+                resp.setRole(p.getRole());
                 response.add(
-                    new PlayerResponse(p.getId(), p.isDead(), p.getPlayerName())
+                    resp
                 );
             }
             return response;
