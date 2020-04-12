@@ -19,4 +19,15 @@ public class RoomController {
         return roomService.createRoom(request);
     }
 
+    @GetMapping("{roomid}")
+    public RoomCreateResponse getRoom(@PathVariable long roomid) {
+        return roomService.getRoom(roomid);
+    }
+
+    @GetMapping("key/{roomkey}")
+    public RoomCreateResponse getRoomByKey(@PathVariable String roomkey) {
+        return roomService.getRoomByKey(roomkey);
+    }
+
+
 }

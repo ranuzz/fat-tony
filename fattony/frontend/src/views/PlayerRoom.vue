@@ -38,7 +38,7 @@
         <div class="columns">
             <div class="column is-2"></div>
             <div class="column is-7">
-                <video ></video>
+                <video autoplay muted playsinline></video>
             </div>
             <div class="column is-2">
                   <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">

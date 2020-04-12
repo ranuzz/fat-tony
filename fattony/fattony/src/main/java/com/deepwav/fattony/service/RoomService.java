@@ -1,5 +1,7 @@
 package com.deepwav.fattony.service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import com.deepwav.fattony.model.payload.RoomCreateRequest;
@@ -9,6 +11,7 @@ import com.deepwav.fattony.repository.RoomRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class RoomService {
@@ -52,5 +55,28 @@ public class RoomService {
 
         return response;
     } 
+
+    public RoomCreateResponse getRoom(long id) {
+        Optional<Room> op_room = roomRepository.findById(id);
+        RoomCreateResponse resposne = new RoomCreateResponse();
+        if (op_room.isPresent()) {
+            Room room = op_room.get();
+            resposne.setGametype(room.getGametype());
+            resposne.setName(room.getName());
+            resposne.setNumplayers(room.getNumplayers());
+            resposne.setRoomid(room.getId());
+            resposne.setRoomkey(room.getRoomkey());
+            resposne.setRules(room.getRules());
+        }
+        return resposne;
+    }
+
+    public RoomCreateResponse getRoomByKey(String roomkey) {
+        List<Room> op_room = roomRepository.findByRoomkey(roomkey);
+        if (op_room != null && op_room.size() != 0) {
+            return this.getRoom(op_room.get(0).getId());
+        }
+        return new RoomCreateResponse();
+    }
 
 }

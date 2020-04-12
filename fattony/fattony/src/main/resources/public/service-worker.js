@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.c0ab97eaef7d6bae04eabb0964c8655c.js"
+  "/precache-manifest.a5fc3c2d4865e2f1cc4b9d48cde689bf.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "mafiaui"});
