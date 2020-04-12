@@ -1,5 +1,7 @@
 package com.deepwav.fattony.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.deepwav.fattony.model.Player;
@@ -72,4 +74,19 @@ public class PlayerService {
         return response;
     }
 
+    public List<PlayerResponse> roomPlayers(long id) {
+        Optional<Room> op_room =  roomRepository.findById(id);
+        if (op_room.isPresent()) {
+            Room room = op_room.get();
+            List<Player> players = playerRepository.findByRoom(room);
+            List<PlayerResponse> response = new ArrayList<>();
+            for (Player p : players) {
+                response.add(
+                    new PlayerResponse(p.getId(), p.isDead(), p.getPlayerName())
+                );
+            }
+            return response;
+        }
+        return new ArrayList<>();
+    }
 }

@@ -74,11 +74,11 @@
         <b-field label="Or find a Room key and Join room"
             type="is-success"
             message="">
-            <b-input :value="roomkey" maxlength="300"></b-input>
+            <b-input v-model="roomkey" maxlength="300"></b-input>
         </b-field>
         <b-field label="with a unique name"
             type="is-success">
-            <b-input :value="playername" maxlength="300"></b-input>
+            <b-input v-model="playername" maxlength="300"></b-input>
         </b-field>
         <div class="buttons">
             <b-button type="is-primary" @click="joinRoom" expanded>Join Room</b-button>
@@ -108,9 +108,44 @@ export default {
       console.log('creating room');
       this.$router.push({ name: 'CreateRoom' });
     },
+    snackbar(msg) {
+      this.$buefy.snackbar.open(msg);
+    },
+    createPlayer(room_id) {
+      const request = {
+        name: this.playername,
+        roomkey: this.roomkey,
+        roomid: room_id
+      }
+      this.$http.post("/api/player/create", request)
+        .then(resp => {
+          let pid = resp.data.playerid;
+          this.$router.push({ name: 'PlayerRoom', params: { id: pid} });
+        })
+        .catch(error => {
+          console.log(error);
+          this.snackbar(error);
+        })
+
+    },
+    getRoomByKey() {
+      this.$http.get("/api/room/key/"+this.roomkey)
+        .then(resp => {
+          if (resp.data.roomid === -1) {
+            this.snackbar("Game not found");
+          } else {
+            this.createPlayer(resp.data.roomid);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.snackbar(error);
+        });
+    },
     joinRoom() {
-      console.log('creating room');
-      this.$router.push({ name: 'PlayerRoom', params: { id: 0} });
+      console.log("joining Game");
+      this.snackbar("Joining Game");
+      this.getRoomByKey();
     }
   },
 };

@@ -13,6 +13,15 @@ public class PlayerResponse {
     long vote;
 
 
+    public PlayerResponse() {
+
+    }
+
+    public PlayerResponse(long playerid, boolean dead, String name) {
+        this.playerid = playerid;
+        this.dead = dead;
+        this.name = name;
+    }
 
     
 

@@ -116,7 +116,7 @@
                 role="button"
                 aria-controls="contentIdForA11y3">
                 <p class="card-header-title">
-                   Game Details
+                   Game &nbsp; <b>{{room_key}}</b>
                 </p>
                 <a class="card-header-icon">
                     <b-icon
@@ -127,6 +127,7 @@
             <div class="card-content">
                 <div class="content">
                   <ul>
+                    <li>Key: {{room_key}}</li>
                     <li>Name: {{room_name}}</li>
                     <li>Players: {{room_player_count}}</li>
                     <li>Type: {{room_game_type}}</li>
@@ -182,15 +183,27 @@ export default {
       room_player_count: 0,
       room_rules: '',
       room_game_type: '',
+      room_key: '',
     };
   },
   methods: {
+    snackbar(msg) {
+      this.$buefy.snackbar.open(msg);
+    },
     getRoomDetails(rid) {
-        this.$http.get('/api/room/'+rid, roomrequest)
+        this.$http.get('/api/room/'+rid)
             .then( resp => {
                 console.log(resp);
+                this.snackbar("Fresh Game : " + resp.data.name);
+                this.roomid = resp.data.roomid;
+                this.room_name = resp.data.name;
+                this.room_player_count = resp.data.numplayers;
+                this.room_rules = resp.data.rules;
+                this.room_game_type = resp.data.gametype
+                this.room_key = resp.data.roomkey;
             })
             .catch( error => {
+                this.snackbar("Error in game creation");
                 console.log(error);
             });
     },

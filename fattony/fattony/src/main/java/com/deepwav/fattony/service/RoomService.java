@@ -72,11 +72,21 @@ public class RoomService {
     }
 
     public RoomCreateResponse getRoomByKey(String roomkey) {
+        /*
         List<Room> op_room = roomRepository.findByRoomkey(roomkey);
         if (op_room != null && op_room.size() != 0) {
+            System.out.println("dasdadhgasdhfashgfashf");
             return this.getRoom(op_room.get(0).getId());
         }
-        return new RoomCreateResponse();
+        */
+        System.out.println(roomkey);
+        Optional<Room> op_room = roomRepository.findByRoomkey(roomkey);
+        if (op_room.isPresent()) {
+            return this.getRoom(op_room.get().getId());
+        }
+        RoomCreateResponse response = new RoomCreateResponse();
+        response.setRoomid(-1);
+        return response;
     }
 
 }

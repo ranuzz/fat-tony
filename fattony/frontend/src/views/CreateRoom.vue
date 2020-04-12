@@ -76,6 +76,9 @@ export default {
         };
     },
     methods: {
+        snackbar(msg) {
+        this.$buefy.snackbar.open(msg);
+        },
         createRoom() {
         const roomrequest = {
             name: this.room_name,
@@ -89,6 +92,7 @@ export default {
                 this.$router.push({ name: 'GodRoom', params: {id: resp.data.roomid}});
             })
             .catch( error => {
+                this.snackbar("Error Occured");
                 console.log(error);
             });
         },

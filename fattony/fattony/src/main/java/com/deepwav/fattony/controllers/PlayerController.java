@@ -1,5 +1,7 @@
 package com.deepwav.fattony.controllers;
 
+import java.util.List;
+
 import com.deepwav.fattony.model.payload.PlayerRequest;
 import com.deepwav.fattony.model.payload.PlayerResponse;
 import com.deepwav.fattony.service.PlayerService;
@@ -33,6 +35,11 @@ public class PlayerController {
     @PatchMapping("update")
     public PlayerResponse updatePlayer(@RequestBody PlayerRequest request) {
         return playerService.updatePlayer(request);
+    }
+
+    @GetMapping("room/{roomid}")
+    public List<PlayerResponse> getRoomPlayers(@PathVariable long roomid) {
+        return playerService.roomPlayers(roomid);
     }
     
 
