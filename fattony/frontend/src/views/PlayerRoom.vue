@@ -38,7 +38,11 @@
         <div class="columns">
             <div class="column is-2"></div>
             <div class="column is-7">
-                <video autoplay muted playsinline></video>
+                <div class="faceapidisplay">
+                      <video autoplay="true" id="inputVideo"></video>
+                      <canvas id="overlay" width="416" height="416" />
+                </div>
+                <!--<video autoplay muted playsinline></video>-->
             </div>
             <div class="column is-2">
                   <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3">
@@ -75,6 +79,12 @@
             <div class="column is-1"></div>
         </div>
     </section>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
     <hr />
     <section>
       <div class="columns">
@@ -117,6 +127,9 @@
 </template>
 
 <script>
+
+import * as faceapi from 'face-api.js';
+
 export default {
     data() {
         return {
@@ -131,6 +144,7 @@ export default {
         };
     },
     methods: {
+
         snackbar(msg) {
             this.$buefy.snackbar.open(msg);
         },
@@ -208,29 +222,86 @@ export default {
                 });
         },
         startWebCam() {
-            var constraints = { audio: true, video: { width: 640, height: 360 } }; 
+            var constraints = { audio: true, video: { width: 416, height: 416 } }; 
 
             navigator.mediaDevices.getUserMedia(constraints)
                 .then(function(mediaStream) {
-                    var video = document.querySelector('video');
+                    var video = document.querySelector("#inputVideo");
                     video.srcObject = mediaStream;
                     video.onloadedmetadata = function(e) {
                         video.play();
                     };
                 })
                 .catch(function(err) { console.log(err.name + ": " + err.message); });
-        }
+        },
+        loadfaceapi() {
+            faceapi.nets.tinyFaceDetector.load('/models');
+            faceapi.loadFaceLandmarkModel('/models');
+        },
+        async onPlay(videoEl) {
+            if(!videoEl.currentTime || videoEl.paused || videoEl.ended)
+                return setTimeout(() => this.onPlay(videoEl))
+
+            const options = new faceapi.TinyFaceDetectorOptions()
+
+            const ts = Date.now()
+
+            let task = faceapi.detectAllFaces(videoEl, options)
+            task = task.withFaceLandmarks()
+            const results = await task
+
+            const canvas = document.querySelector('#overlay')
+            const dims = faceapi.matchDimensions(canvas, videoEl, true)
+
+            const resizedResults = faceapi.resizeResults(results, dims)
+
+            function calculate_ear(eye){
+                return (dist(eye[1], eye[5]) + dist(eye[2], eye[4])) / (2.0 * dist(eye[0], eye[3]));
+            }
+
+            function dist(arr1, arr2) {
+                return Math.sqrt(Math.pow((arr1[0]-arr2[0]), 2) + Math.pow((arr1[1]-arr2[1]), 2));
+            }
+            
+            if (resizedResults.length) {
+                if (resizedResults[0].landmarks !== undefined){
+                    let landmarks = resizedResults[0].landmarks._positions;
+                    let leftEye = [[landmarks[42]._x, landmarks[42]._y], [landmarks[43]._x, landmarks[43]._y], [landmarks[44]._x, landmarks[44]._y], [landmarks[45]._x, landmarks[45]._y], [landmarks[46]._x, landmarks[46]._y], [landmarks[47]._x, landmarks[47]._y]]
+                    let rightEye = [[landmarks[36]._x, landmarks[36]._y], [landmarks[37]._x, landmarks[37]._y], [landmarks[38]._x, landmarks[38]._y], [landmarks[39]._x, landmarks[39]._y], [landmarks[40]._x, landmarks[40]._y], [landmarks[41]._x, landmarks[41]._y]]
+                    let ear = (calculate_ear(leftEye) + calculate_ear(rightEye))/2.0;
+                    console.log(ear);
+                }
+            }
+            faceapi.draw.drawDetections(canvas, resizedResults)
+            faceapi.draw.drawFaceLandmarks(canvas, resizedResults)
+
+            setTimeout(() => this.onPlay(videoEl))
+        },
     },
     mounted() {
         console.log(this.$route.params);
         this.playerid = this.$route.params['id'];
         console.log('starting webcam');
-        this.startWebCam();
         this.getPlayerDetails(this.playerid);
+        this.startWebCam();
+        this.loadfaceapi();
+        this.onPlay(document.querySelector("#inputVideo"));
+        
     }
 }
 </script>
 
 <style>
+
+.faceapidisplay {
+    position: relative;
+}
+
+#inputVideo {
+    position: absolute;
+}
+#overlay {
+    position: absolute;
+}
 
 </style>
