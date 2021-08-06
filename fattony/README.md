@@ -1,68 +1,64 @@
 ## Development Environment
 
 ### platform
-* Windows 10 WSL Ubuntu 18.04
+
+* Windows 10 WSL Ubuntu 20.04
 
 ### Installing nodejs
 
-> curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+[Installing Node Using the Node Version Manager](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
 
-> sudo apt-get install -y nodejs
+```sh
+nvm list
+#default -> v14.16.1
 
-```
 node -v
-v10.17.0
-```
-```
-npm -v
-6.11.3
-```
+#v14.16.1
 
-in case of error while running *npm -v* add this to *.bashrc*
-> alias npm="/usr/bin/npm"
+npm -v
+#6.14.12
+```
 
 ### Installing Java
 
-> required version : *java-11-openjdk-amd64*
+```sh
+required version : *java-11-openjdk-amd64*
 
-> sudo apt install openjdk-11-jdk
+sudo apt install openjdk-11-jdk
 
-> sudo apt install maven
+sudo apt install maven
+```
 
 check version
 
-```
+```sh
 java -version
 
-openjdk version "11.0.4" 2019-07-16
-OpenJDK Runtime Environment (build 11.0.4+11-post-Ubuntu-1ubuntu218.04.3)
-OpenJDK 64-Bit Server VM (build 11.0.4+11-post-Ubuntu-1ubuntu218.04.3, mixed mode, sharing)
+openjdk version "11.0.11" 2021-04-20
+OpenJDK Runtime Environment (build 11.0.11+9-Ubuntu-0ubuntu2.20.04)
+OpenJDK 64-Bit Server VM (build 11.0.11+9-Ubuntu-0ubuntu2.20.04, mixed mode, sharing)
 ```
 
-in case of multiple java versions
+### Build and Run
 
-> sudo update-alternatives --config java
-
-### building
-
-> mvn clean install -U
-
-in case of symbol error add this to *.bashrc*
-
-> export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+```sh
+mvn clean install -U
+java -jar mafiaapi/target/mafiaapi-0.0.1-SNAPSHOT.jar
+```
 
 ### dev run
 
 frontend
 
-> cd frontend
-
-> npm run serve
+```sh
+cd mafiaui
+npm run serve
+```
 
 backend
 
-> cd backend
-
-> mvn clean install
-
-> jav -jar target/backend-{VERSION}.jar
+```sh
+cd mafiaapi
+mvn clean install
+jav -jar target/backend-{VERSION}.jar
+```
