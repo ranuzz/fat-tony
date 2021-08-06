@@ -5,6 +5,6 @@ Named after the beloved Simpson’s character, Fat Tony is our attempt to bring 
 ## Docker
 
 ```sh
-docker build -t fattony .
-docker run -d -p 80:8083 --name fattony-run fattony
+docker pull ranushekhar/fattony-mafia:latest
+docker run -d -p 80:8083 --name fattony-run ranushekhar/fattony-mafia:latest
 ```
